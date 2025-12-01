@@ -1,0 +1,5 @@
+{
+  "name": "SIP Calculator",
+  "description": "An advanced Systematic Investment Plan (SIP) calculator with step-up, inflation adjustment, wealth insights, and interactive visualizations.",
+  "requestFramePermissions": []
+}
