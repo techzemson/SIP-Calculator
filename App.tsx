@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { 
   Calculator, TrendingUp, DollarSign, Download, Share2, 
   Moon, Sun, RefreshCw, ChevronDown, ChevronUp, CheckCircle,
-  AlertCircle, ArrowRight, Save, History, Copy, Twitter, Linkedin, MessageCircle
+  AlertCircle, ArrowRight, Save, History, Copy, Twitter, Linkedin, MessageCircle,
+  BookOpen, X, Target, Zap, Shield, BarChart3
 } from 'lucide-react';
 import { SliderControl, SelectControl } from './components/Controls';
 import { ResultCharts } from './components/Visualizations';
@@ -18,6 +19,7 @@ const App: React.FC = () => {
   const [progress, setProgress] = useState(0);
   const [showResults, setShowResults] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [showDocs, setShowDocs] = useState(false);
   const [history, setHistory] = useState<{date: string, result: string, value: number}[]>([]);
   
   const resultsRef = useRef<HTMLDivElement>(null);
@@ -93,7 +95,7 @@ const App: React.FC = () => {
       
       // Add to history
       const newEntry = {
-          date: new Date().toLocaleDateString(),
+          date: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
           result: `Inv: ${res.totalInvested} | Val: ${res.totalValue}`,
           value: res.totalValue
       };
@@ -151,10 +153,10 @@ const App: React.FC = () => {
     <div className="min-h-screen pb-10 bg-gray-50 dark:bg-slate-900 transition-colors duration-300">
       
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+      <header className="sticky top-0 z-40 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
         <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <div className="bg-gradient-to-tr from-primary-600 to-primary-400 p-2.5 rounded-xl text-white shadow-lg shadow-primary-500/30">
+            <div className="bg-primary-600 p-2.5 rounded-xl text-white">
               <Calculator size={24} />
             </div>
             <div>
@@ -164,6 +166,14 @@ const App: React.FC = () => {
           </div>
           
           <div className="flex items-center gap-3">
+             <button 
+                onClick={() => setShowDocs(true)}
+                className="hidden md:flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+             >
+                 <BookOpen size={18} />
+                 <span>Documentation</span>
+             </button>
+
              <SelectControl 
                 value={currency} 
                 options={Object.values(Currency).map(c => ({ value: c, label: c }))}
@@ -180,32 +190,124 @@ const App: React.FC = () => {
                 className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors relative"
              >
                  <History size={18} />
-                 <span>History</span>
+                 <span className="hidden sm:inline">History</span>
                  {history.length > 0 && <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>}
              </button>
           </div>
         </div>
       </header>
       
+      {/* Documentation Modal */}
+      {showDocs && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={() => setShowDocs(false)}>
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-3xl max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center sticky top-0 bg-white dark:bg-slate-900 z-10">
+               <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                 <BookOpen className="text-primary-600" /> User Guide
+               </h2>
+               <button onClick={() => setShowDocs(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
+                 <X size={24} className="text-slate-500" />
+               </button>
+            </div>
+            <div className="p-6 space-y-8">
+               
+               <section>
+                 <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-3 flex items-center gap-2">
+                   <Target className="text-emerald-500" size={20}/>
+                   What is this tool?
+                 </h3>
+                 <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
+                   This advanced <strong>SIP (Systematic Investment Plan) Calculator</strong> helps you plan your financial future by simulating investment growth over time. Unlike basic calculators, it considers real-world factors like inflation, taxes, fees, and increasing investments (Step-up).
+                 </p>
+               </section>
+
+               <section>
+                 <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-3 flex items-center gap-2">
+                   <Zap className="text-amber-500" size={20}/>
+                   Key Features
+                 </h3>
+                 <div className="grid md:grid-cols-2 gap-4">
+                    <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-xl">
+                       <h4 className="font-bold text-slate-900 dark:text-white mb-1">📈 Step-up SIP</h4>
+                       <p className="text-sm text-slate-500 dark:text-slate-400">Model annual increases in your monthly investment as your income grows.</p>
+                    </div>
+                    <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-xl">
+                       <h4 className="font-bold text-slate-900 dark:text-white mb-1">💰 Inflation Adjustment</h4>
+                       <p className="text-sm text-slate-500 dark:text-slate-400">See the "Real Value" of your wealth in today's purchasing power.</p>
+                    </div>
+                    <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-xl">
+                       <h4 className="font-bold text-slate-900 dark:text-white mb-1">🏛️ Tax & Fees</h4>
+                       <p className="text-sm text-slate-500 dark:text-slate-400">Deduct Expense Ratios and Capital Gains Tax to see net-in-hand returns.</p>
+                    </div>
+                    <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-xl">
+                       <h4 className="font-bold text-slate-900 dark:text-white mb-1">🎯 Goal Tracking</h4>
+                       <p className="text-sm text-slate-500 dark:text-slate-400">Set a target amount and see a progress bar indicating how close you are.</p>
+                    </div>
+                 </div>
+               </section>
+
+               <section>
+                 <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-3 flex items-center gap-2">
+                   <BarChart3 className="text-primary-500" size={20}/>
+                   How to Use
+                 </h3>
+                 <ol className="space-y-3 list-decimal list-inside text-slate-600 dark:text-slate-300">
+                    <li className="pl-2"><span className="font-semibold">Configure Inputs:</span> Enter your monthly investment amount and expected duration.</li>
+                    <li className="pl-2"><span className="font-semibold">Set Return Rate:</span> Use the slider or presets (Conservative/Moderate/Aggressive) to estimate growth.</li>
+                    <li className="pl-2"><span className="font-semibold">Advanced Settings:</span> Click "Advanced Settings" to add step-up %, lump sum, or tax details.</li>
+                    <li className="pl-2"><span className="font-semibold">Analyze:</span> Click "Calculate & Analyze" to generate charts and detailed metrics.</li>
+                    <li className="pl-2"><span className="font-semibold">Review:</span> Check the charts, "Cost of Delay", and "Wealth Milestones".</li>
+                 </ol>
+               </section>
+            </div>
+            <div className="p-6 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-100 dark:border-slate-800 text-center">
+               <button onClick={() => setShowDocs(false)} className="px-6 py-2 bg-primary-600 text-white font-bold rounded-lg hover:bg-primary-700 transition-colors">
+                 Got it, Let's Plan!
+               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* History Drawer */}
       {showHistory && (
           <div className="fixed inset-0 z-50 flex justify-end bg-black/20 backdrop-blur-sm" onClick={() => setShowHistory(false)}>
-              <div className="w-80 bg-white dark:bg-slate-900 h-full shadow-2xl p-6 overflow-y-auto" onClick={e => e.stopPropagation()}>
-                  <div className="flex justify-between items-center mb-6">
+              <div className="w-80 bg-white dark:bg-slate-900 h-full shadow-2xl flex flex-col" onClick={e => e.stopPropagation()}>
+                  <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-white dark:bg-slate-900">
                       <h3 className="font-bold text-lg dark:text-white">Recent Calculations</h3>
-                      <button onClick={() => setHistory([])} className="text-xs text-red-500 hover:underline">Clear</button>
+                      <button onClick={() => setShowHistory(false)} className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+                        <X size={20} />
+                      </button>
                   </div>
-                  {history.length === 0 ? (
-                      <p className="text-slate-400 text-sm">No history yet.</p>
-                  ) : (
-                      <div className="space-y-3">
-                          {history.map((item, idx) => (
-                              <div key={idx} className="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-100 dark:border-slate-700">
-                                  <p className="text-xs text-slate-400 mb-1">{item.date}</p>
-                                  <p className="text-sm font-semibold text-primary-600">{formatCurrency(item.value, currency)}</p>
-                              </div>
-                          ))}
-                      </div>
+                  
+                  <div className="flex-1 overflow-y-auto p-4">
+                    {history.length === 0 ? (
+                        <div className="h-full flex flex-col items-center justify-center text-slate-400 space-y-2">
+                           <History size={32} className="opacity-20"/>
+                           <p className="text-sm">No history yet.</p>
+                        </div>
+                    ) : (
+                        <div className="space-y-3">
+                            {history.map((item, idx) => (
+                                <div key={idx} className="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-100 dark:border-slate-700 hover:border-primary-200 dark:hover:border-primary-900 transition-colors cursor-default">
+                                    <div className="flex justify-between items-start mb-1">
+                                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{item.date.split(' ')[0]}</p>
+                                      <p className="text-[10px] text-slate-400">{item.date.split(' ')[1] + ' ' + item.date.split(' ')[2]}</p>
+                                    </div>
+                                    <p className="text-sm font-bold text-primary-600 dark:text-primary-400">{formatCurrency(item.value, currency)}</p>
+                                    <p className="text-xs text-slate-500 truncate">{item.result}</p>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                  </div>
+
+                  {history.length > 0 && (
+                    <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
+                       <button onClick={() => setHistory([])} className="w-full py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors font-medium">
+                          Clear All History
+                       </button>
+                    </div>
                   )}
               </div>
           </div>
@@ -328,12 +430,12 @@ const App: React.FC = () => {
             </button>
           </div>
 
-          {/* RIGHT COLUMN: Results */}
-          <div className="lg:col-span-8 relative min-h-[500px]">
+          {/* RIGHT COLUMN: Results - Re-architected for No Overlap */}
+          <div className="lg:col-span-8 min-h-[500px]">
             
-            {/* Overlay Progress for UX */}
-            {isCalculating && (
-              <div className="absolute inset-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm rounded-3xl flex flex-col items-center justify-center">
+            {isCalculating ? (
+              /* Loading State */
+              <div className="h-full w-full flex flex-col items-center justify-center min-h-[500px] bg-white dark:bg-slate-800 rounded-3xl">
                  <div className="w-64">
                     <div className="flex justify-between mb-2 text-sm font-bold text-slate-700 dark:text-slate-300">
                       <span>Analyzing Market Scenarios</span>
@@ -348,13 +450,9 @@ const App: React.FC = () => {
                     <p className="mt-4 text-center text-slate-500 text-sm animate-pulse">Calculating compound interest & taxes...</p>
                  </div>
               </div>
-            )}
-
-            {/* Results Content */}
-            <div ref={resultsRef} className={`transition-opacity duration-500 ${showResults ? 'opacity-100' : 'opacity-40 filter blur-sm grayscale'}`}>
-              
-              {result && (
-                <>
+            ) : showResults && result ? (
+              /* Results State */
+              <div ref={resultsRef} className="animate-in fade-in zoom-in-95 duration-500">
                   {/* Goal Progress Bar */}
                   {inputs.targetAmount > 0 && (
                       <div className="mb-6 bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm">
@@ -380,33 +478,33 @@ const App: React.FC = () => {
 
                   {/* Summary Cards */}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                    <div className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm">
-                       <p className="text-slate-500 dark:text-slate-400 text-xs font-medium mb-1">Total Invested</p>
-                       <p className="text-lg md:text-xl font-bold text-slate-800 dark:text-white">
+                    <div className="bg-primary-600 p-4 rounded-xl shadow-sm">
+                       <p className="text-blue-100 text-xs font-medium mb-1">Total Invested</p>
+                       <p className="text-lg md:text-xl font-bold text-white">
                          {formatCurrency(result.totalInvested, currency)}
                        </p>
-                       <p className="text-[10px] text-slate-400 mt-1">Duration: {inputs.timePeriod} Yrs</p>
+                       <p className="text-[10px] text-blue-200 mt-1">Duration: {inputs.timePeriod} Yrs</p>
                     </div>
-                    <div className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm">
-                       <p className="text-slate-500 dark:text-slate-400 text-xs font-medium mb-1">Est. Returns</p>
-                       <p className="text-lg md:text-xl font-bold text-emerald-600 dark:text-emerald-400">
+                    <div className="bg-primary-600 p-4 rounded-xl shadow-sm">
+                       <p className="text-blue-100 text-xs font-medium mb-1">Est. Returns</p>
+                       <p className="text-lg md:text-xl font-bold text-white">
                          {formatCurrency(result.totalReturns, currency)}
                        </p>
-                       <p className="text-[10px] text-emerald-500 mt-1">+{result.absoluteReturnPercentage.toFixed(0)}% Abs</p>
+                       <p className="text-[10px] text-blue-200 mt-1">+{result.absoluteReturnPercentage.toFixed(0)}% Abs</p>
                     </div>
-                     <div className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm">
-                       <p className="text-slate-500 dark:text-slate-400 text-xs font-medium mb-1">Post-Tax Value</p>
-                       <p className="text-lg md:text-xl font-bold text-indigo-600 dark:text-indigo-400">
+                     <div className="bg-primary-600 p-4 rounded-xl shadow-sm">
+                       <p className="text-blue-100 text-xs font-medium mb-1">Post-Tax Value</p>
+                       <p className="text-lg md:text-xl font-bold text-white">
                          {formatCurrency(result.postTaxValue, currency)}
                        </p>
-                       <p className="text-[10px] text-slate-400 mt-1">Tax: {inputs.taxRate}%</p>
+                       <p className="text-[10px] text-blue-200 mt-1">Tax: {inputs.taxRate}%</p>
                     </div>
-                    <div className="bg-gradient-to-br from-primary-600 to-primary-800 p-4 rounded-xl shadow-lg shadow-primary-600/20 text-white">
-                       <p className="text-primary-100 text-xs font-medium mb-1">Maturity Value</p>
-                       <p className="text-xl md:text-2xl font-bold">
+                    <div className="bg-primary-600 p-4 rounded-xl shadow-sm">
+                       <p className="text-blue-100 text-xs font-medium mb-1">Maturity Value</p>
+                       <p className="text-xl md:text-2xl font-bold text-white">
                          {formatCurrency(result.totalValue, currency)}
                        </p>
-                       <p className="text-[10px] text-primary-200 mt-1">{result.wealthMultiplier.toFixed(1)}x Growth</p>
+                       <p className="text-[10px] text-blue-200 mt-1">{result.wealthMultiplier.toFixed(1)}x Growth</p>
                     </div>
                   </div>
 
@@ -466,13 +564,10 @@ const App: React.FC = () => {
                        Download CSV
                      </button>
                   </div>
-                </>
-              )}
-            </div>
-
-            {/* Empty State Prompt */}
-            {!showResults && !isCalculating && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8 opacity-50 pointer-events-none">
+              </div>
+            ) : (
+              /* Empty State */
+              <div className="h-full min-h-[500px] flex flex-col items-center justify-center text-center p-8 opacity-50 select-none">
                  <div className="w-24 h-24 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-6 animate-pulse">
                    <ArrowRight size={32} className="text-slate-400" />
                  </div>
