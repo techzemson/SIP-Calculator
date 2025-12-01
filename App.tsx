@@ -105,14 +105,6 @@ const App: React.FC = () => {
     }, duration);
   };
 
-  const handleShare = () => {
-    const params = new URLSearchParams();
-    Object.entries(inputs).forEach(([k, v]) => params.set(k, v.toString()));
-    const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
-    navigator.clipboard.writeText(url);
-    alert('Link copied to clipboard!');
-  };
-
   const loadFromParams = () => {
     const params = new URLSearchParams(window.location.search);
     if (params.has('monthlyInvestment')) {
@@ -185,9 +177,10 @@ const App: React.FC = () => {
              </button>
              <button 
                 onClick={() => setShowHistory(!showHistory)}
-                className="p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors relative"
+                className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors relative"
              >
-                 <History size={20} />
+                 <History size={18} />
+                 <span>History</span>
                  {history.length > 0 && <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>}
              </button>
           </div>
@@ -466,45 +459,11 @@ const App: React.FC = () => {
                   {/* Action Bar */}
                   <div className="flex flex-wrap gap-4 justify-end no-print bg-slate-100 dark:bg-slate-800/50 p-4 rounded-2xl">
                      <button 
-                       onClick={() => {
-                          const text = `I calculated my SIP returns! investing ${formatCurrency(inputs.monthlyInvestment, currency)}/mo for ${inputs.timePeriod} years turns into ${formatCurrency(result.totalValue, currency)}! Check it out here: ${window.location.href}`;
-                          window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank');
-                       }}
-                       className="p-3 rounded-lg bg-blue-400 text-white hover:bg-blue-500 transition-colors"
-                       title="Share on Twitter"
-                     >
-                       <Twitter size={18} />
-                     </button>
-                      <button 
-                       onClick={() => {
-                          const text = `I calculated my SIP returns! investing ${formatCurrency(inputs.monthlyInvestment, currency)}/mo for ${inputs.timePeriod} years turns into ${formatCurrency(result.totalValue, currency)}! Check it out here: ${window.location.href}`;
-                          window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
-                       }}
-                       className="p-3 rounded-lg bg-green-500 text-white hover:bg-green-600 transition-colors"
-                       title="Share on WhatsApp"
-                     >
-                       <MessageCircle size={18} />
-                     </button>
-                     <button 
-                       onClick={handleShare}
-                       className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 font-medium text-slate-700 dark:text-slate-200 transition-colors"
-                     >
-                       <Share2 size={18} />
-                       Copy Link
-                     </button>
-                     <button 
-                       onClick={() => window.print()}
-                       className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 font-medium text-slate-700 dark:text-slate-200 transition-colors"
-                     >
-                       <Calculator size={18} />
-                       Print Report
-                     </button>
-                     <button 
                        onClick={() => downloadCSV(result.breakdown)}
                        className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold hover:opacity-90 transition-opacity"
                      >
                        <Download size={18} />
-                       CSV
+                       Download CSV
                      </button>
                   </div>
                 </>
@@ -565,7 +524,6 @@ const App: React.FC = () => {
       
       {/* Footer */}
       <footer className="mt-20 border-t border-slate-200 dark:border-slate-800 py-8 text-center text-slate-400 text-sm">
-         <p>© {new Date().getFullYear()} SIP Calculator.</p>
       </footer>
     </div>
   );
